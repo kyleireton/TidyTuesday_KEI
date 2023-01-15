@@ -1,39 +1,51 @@
 ---
-title: "Lifespan of S1928A v WT"
+title: "Tidy Tuesday exercises"
 author: "Kyle Ireton"
-date: "01/13/23"
+date: "10-01-23"
 output: html_document
 ---
 
+# Get the Data
+
+# Read in with tidytuesdayR package 
+# Install from CRAN via: install.packages("tidytuesdayR")
+# This loads the readme and all the datasets for the week of interest
+
 ```{r setup, include=FALSE}
 
+library(tidytuesdayR)
+library(here)
 library(tidyverse)
-library(ggrepel)
-library(lme4)
 
 ```
 
 
 ```{r}
 
-rockit <- read_csv("C:/Users/kylei/Documents/Github/Learning_paper/lifespan.csv") %>% 
-  
-  select(Cage, ID, Sex, GT, DOB, End, Days, Weeks) 
+tuesdata <- tidytuesdayR::tt_load('2023-01-10')
 
-rockcheck = rockit %>% 
-  
-  transmute(ID = paste(Cage, ID, sep = "-"),
-            
-            Sex,
-            
-            GT, 
-            
-            Days)
+tuesdata
 
-rockcheck$ID = as.factor(rockcheck$ID)
+```
 
-rockcheck$GT = factor(rockcheck$GT,
-                      levels = c("W", "K"))
+# Download the raw data.
+
+```{r}
+
+PFW_2021_public <- readr::read_csv("https://clo-pfw-prod.s3.us-west-2.amazonaws.com/data/PFW_2021_public.csv")
+dplyr::glimpse(PFW_2021_public)
+
+```
+
+# There are almost three million rows! The file is too big for github, let's
+# subsample.
+
+```{r}
+
+set.seed(424242)
+PFW_2021_public_subset <- dplyr::slice_sample(PFW_2021_public, n = 1e5)
+
+readr::write_csv(PFW_2021_public_subset, here::here("data", "2023", "2023-01-10", "PFW_2021_public.csv"))
 
 ```
 
@@ -81,89 +93,4 @@ ggplot(
   
   theme_classic()
 
-```
-
-
-```{r}
-
-t.test(Days ~ GT,
-       
-       rockcheck)
-
-```
-
-```{r, fig.width = 5, fig.height=6}
-
-ggplot(
-  
-  rockcheck,
-  
-  aes(
-    
-    interaction(GT, Sex),
-    
-    Days,
-    
-    color = GT
-    
-  )) +
-    
-  
-    
-  stat_summary(fun = "mean",
-                 
-                 geom = "point",
-                 
-                 size = 2) +
-  
-  stat_summary(fun.data = "mean_se",
-               
-               geom = "errorbar",
-               
-               width = 0.15,
-               
-               size = 1) +
-  
-  geom_jitter(alpha = 0.5,
-              
-              width = 0.07,
-                
-                height = 10) +
-  
-  scale_color_manual(values = c("blue", "red")) +
-  
-  coord_cartesian(ylim = c(0, 1000)) +
-  
-  theme_classic()
-
-```
-
-little note here    
-
-```{r}
-
-aov(Days ~ (GT*Sex) + Error(ID), rockcheck)
-
-```
-
-```{r}
-
-summary(aov(Days ~ GT*Sex + Error(ID), rockcheck))
-
-```
-
-
-```{r}
-checkit <- aov(Days ~ GT*Sex + Error(ID), rockcheck)
-
-summary(checkit)
-```
-
-
-```{r}
-
- lmer(Days ~ GT + (1|ID),
-      
-      rockcheck)
-  
 ```
