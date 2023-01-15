@@ -1,0 +1,169 @@
+---
+title: "Lifespan of S1928A v WT"
+author: "Kyle Ireton"
+date: "01/13/23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+library(ggrepel)
+library(lme4)
+
+```
+
+
+```{r}
+
+rockit <- read_csv("C:/Users/kylei/Documents/Github/Learning_paper/lifespan.csv") %>% 
+  
+  select(Cage, ID, Sex, GT, DOB, End, Days, Weeks) 
+
+rockcheck = rockit %>% 
+  
+  transmute(ID = paste(Cage, ID, sep = "-"),
+            
+            Sex,
+            
+            GT, 
+            
+            Days)
+
+rockcheck$ID = as.factor(rockcheck$ID)
+
+rockcheck$GT = factor(rockcheck$GT,
+                      levels = c("W", "K"))
+
+```
+
+```{r, fig.width = 5, fig.height=6}
+
+ggplot(
+  
+  rockcheck,
+  
+  aes(
+    
+    GT,
+    
+    Days,
+    
+    color = GT
+    
+  )) +
+    
+  
+    
+  stat_summary(fun = "mean",
+                 
+                 geom = "point",
+                 
+                 size = 2) +
+  
+  stat_summary(fun.data = "mean_se",
+               
+               geom = "errorbar",
+               
+               width = 0.15,
+               
+               size = 1) +
+  
+  geom_jitter(alpha = 0.5,
+              
+              width = 0.07,
+                
+                height = 10) +
+  
+  scale_color_manual(values = c("blue", "red")) +
+  
+  coord_cartesian(ylim = c(0, 1000)) +
+  
+  theme_classic()
+
+```
+
+
+```{r}
+
+t.test(Days ~ GT,
+       
+       rockcheck)
+
+```
+
+```{r, fig.width = 5, fig.height=6}
+
+ggplot(
+  
+  rockcheck,
+  
+  aes(
+    
+    interaction(GT, Sex),
+    
+    Days,
+    
+    color = GT
+    
+  )) +
+    
+  
+    
+  stat_summary(fun = "mean",
+                 
+                 geom = "point",
+                 
+                 size = 2) +
+  
+  stat_summary(fun.data = "mean_se",
+               
+               geom = "errorbar",
+               
+               width = 0.15,
+               
+               size = 1) +
+  
+  geom_jitter(alpha = 0.5,
+              
+              width = 0.07,
+                
+                height = 10) +
+  
+  scale_color_manual(values = c("blue", "red")) +
+  
+  coord_cartesian(ylim = c(0, 1000)) +
+  
+  theme_classic()
+
+```
+
+little note here    
+
+```{r}
+
+aov(Days ~ (GT*Sex) + Error(ID), rockcheck)
+
+```
+
+```{r}
+
+summary(aov(Days ~ GT*Sex + Error(ID), rockcheck))
+
+```
+
+
+```{r}
+checkit <- aov(Days ~ GT*Sex + Error(ID), rockcheck)
+
+summary(checkit)
+```
+
+
+```{r}
+
+ lmer(Days ~ GT + (1|ID),
+      
+      rockcheck)
+  
+```
