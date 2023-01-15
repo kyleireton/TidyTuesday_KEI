@@ -28,69 +28,57 @@ tuesdata
 
 ```
 
-# Download the raw data.
+# read in data
 
 ```{r}
 
-PFW_2021_public <- readr::read_csv("https://clo-pfw-prod.s3.us-west-2.amazonaws.com/data/PFW_2021_public.csv")
-dplyr::glimpse(PFW_2021_public)
+# feederwatch <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-01-10/PFW_2021_public.csv')
+# site_data <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-01-10/PFW_count_site_data_public_2021.csv')
 
 ```
-
-# There are almost three million rows! The file is too big for github, let's
-# subsample.
 
 ```{r}
 
-set.seed(424242)
-PFW_2021_public_subset <- dplyr::slice_sample(PFW_2021_public, n = 1e5)
+# write_csv(feederwatch, "feederwatch.csv")
 
-readr::write_csv(PFW_2021_public_subset, here::here("data", "2023", "2023-01-10", "PFW_2021_public.csv"))
+# write_csv(site_data, "sitedata.csv")
 
 ```
 
-```{r, fig.width = 5, fig.height=6}
 
-ggplot(
-  
-  rockcheck,
-  
-  aes(
-    
-    GT,
-    
-    Days,
-    
-    color = GT
-    
-  )) +
-    
-  
-    
-  stat_summary(fun = "mean",
-                 
-                 geom = "point",
-                 
-                 size = 2) +
-  
-  stat_summary(fun.data = "mean_se",
-               
-               geom = "errorbar",
-               
-               width = 0.15,
-               
-               size = 1) +
-  
-  geom_jitter(alpha = 0.5,
-              
-              width = 0.07,
-                
-                height = 10) +
-  
-  scale_color_manual(values = c("blue", "red")) +
-  
-  coord_cartesian(ylim = c(0, 1000)) +
-  
-  theme_classic()
+```{r}
+
+feederwatch = read_csv("feederwatch.csv")
+
+site_data = read_csv("sitedata.csv")
+
+```
+
+```{r}
+
+feederwatch
+site_data
+
+```
+
+```{r}
+
+head(feederwatch)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+
 
 ```
