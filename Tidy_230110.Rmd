@@ -185,7 +185,7 @@ get_density <- function(x, y, ...) {
 feederwatch$density = get_density(
   feederwatch$longitude,
   feederwatch$latitude,
-  n = 500
+  n = 1000
   )
 
 ggplot(
@@ -221,3 +221,4 @@ coord_cartesian(
 theme(aspect.ratio = 0.66)
 
 ```
+
