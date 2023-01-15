@@ -17,6 +17,8 @@ library(tidytuesdayR)
 library(here)
 library(tidyverse)
 
+
+theme_set(theme_minimal(base_size = 16))
 ```
 
 
@@ -67,18 +69,155 @@ head(feederwatch)
 
 ```
 
+Let's just get a rough map by lat / long ? 
 
+```{r}
 
+ggplot(
+  feederwatch,
 
+  aes(latitude,
+  longitude)
+) +
 
+geom_point() +
 
+theme_minimal()
 
+```
 
+okay I can see a rough shape of something 
+But I think I need flip lat / long! 
 
+```{r}
+
+ggplot(
+  feederwatch,
+
+  aes(longitude,
+
+  latitude)
+) +
+
+geom_point() 
+
+```
+
+yeah, okay this the US but the visual range is atrocious. Let's adjust.
+
+```{r}
+
+ggplot(
+
+  feederwatch,
+
+  aes(longitude,
+  
+  latitude)
+
+) +
+
+geom_point(size = 1) +
+
+coord_cartesian(
+
+  xlim = c(-162.5, -50),
+
+  ylim = c(20, 70)
+
+  ) +
+
+theme(aspect.ratio = 0.66)
+
+```
 
 
 ```{r}
 
+ggplot(
 
+  feederwatch,
+
+  aes(longitude,
+  
+  latitude)
+
+) +
+
+#geom_density2d_filled(
+#  alpha = 1
+#) +
+
+geom_point(#color = "white",
+alpha = 0.01,
+size = 0.5) +
+
+
+coord_cartesian(
+
+  xlim = c(-162.5, -50),
+
+  ylim = c(20, 70)
+
+  ) +
+
+theme(aspect.ratio = 0.66)
+
+```
+
+```{r}
+
+get_density <- function(x, y, ...) {
+  dens <- MASS::kde2d(x, y, ...)
+  ix <- findInterval(x, dens$x)
+  iy <- findInterval(y, dens$y)
+  ii <- cbind(ix, iy)
+  return(dens$z[ii])
+}
+
+
+
+```
+
+
+```{r}
+
+feederwatch$density = get_density(
+  feederwatch$longitude,
+  feederwatch$latitude,
+  n = 500
+  )
+
+ggplot(
+
+  feederwatch,
+
+  aes(longitude,
+  
+  latitude,
+  
+  color = density)
+
+) +
+
+#geom_density2d_filled(
+#  alpha = 1
+#) +
+
+geom_point(#color = "white",
+alpha = 0.01,
+size = 0.5) +
+
+coord_cartesian(
+
+  xlim = c(-162.5, -50),
+
+  ylim = c(20, 70)
+
+  ) +
+
+  scale_color_viridis_b() +
+
+theme(aspect.ratio = 0.66)
 
 ```
